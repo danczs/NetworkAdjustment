@@ -8,7 +8,7 @@ from .drop import DropChannel
 
 
 class Cell(nn.Module):
-    def __init_(self, C_in, C_outs, reduction, drop_type='b', channel_padding='local'):
+    def __init__(self, C_in, C_outs, reduction, drop_type='b', channel_padding='local'):
         super(Cell, self).__init__()
         self.reduction = reduction
         self.C_in = C_in
@@ -27,7 +27,7 @@ class Cell(nn.Module):
         self.drop = DropChannel(drop_type=drop_type)
         if self.reduction:
             self.downsample = nn.Sequential(
-                nn.Conv2d(self.C_in, self.C_outs[1], 1, strdie=2, bias=False),
+                nn.Conv2d(self.C_in, self.C_outs[1], 1, stride=2, bias=False),
                 nn.BatchNorm2d(self.C_outs[1])
             )
         self.reset_parameters()
@@ -54,7 +54,7 @@ class Cell(nn.Module):
         short = h_in
         if self.reduction:
             short = self.downsample(short)
-            self.C_in = self.C_out[1]
+            self.C_in = self.C_outs[1]
         if self.C_in < self.C_outs[1]:
             short = F.pad(short, (0,0,0,0, (self.C_outs[1] - self.C_in),0))
         elif self.C_in > self.C_outs[1]:
@@ -74,6 +74,7 @@ class ResNetImageNet(nn.Module):
         self.num_classes = num_classes
         self.channel_padding = channel_padding
         self.depth = depth
+        self.cell_num = (depth - 2) // 2
 
         c_in, c_outm, c_out, c_final = self.parse_channel_config(self.init_channels, channel_numbers,
                                                                  self.channel_padding)
@@ -84,7 +85,6 @@ class ResNetImageNet(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         )
         self.cells = nn.ModuleList()
-        self.cell_num = (depth - 2) // 2
         self.c_red = [4,8,12] if depth == 18 else [6, 14 ,26] #resnet-18 & 34
         self.drop_rates =[]
         for j in range(self.cell_num):
@@ -92,7 +92,7 @@ class ResNetImageNet(nn.Module):
                 reduction = True
             else:
                 reduction = False
-            cell = Cell(c_in[j], c_outm[j], c_out[j], reduction=reduction, channel_padding=self.channel_padding)
+            cell = Cell(c_in[j], [c_outm[j], c_out[j]], reduction=reduction, channel_padding=self.channel_padding)
             self.cells += [cell]
         self.global_pooling = nn.AdaptiveAvgPool2d(1)
         self.classifier = nn.Linear(c_final, self.num_classes)

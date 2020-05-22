@@ -69,7 +69,7 @@ class ResNet_Cifar_Config(ChannelConfig):
             cs_s = symbols('c' + str(i))
             c_in = input_sym[i]
             if i in self.c_red:
-                im_size = int((fm_size + 1) // 2)
+                fm_size = int((fm_size + 1) // 2)
                 flops_fn +=cs_s * c_in * self.kernel_size * self.kernel_size * fm_size * fm_size
             else:
                 flops_fn +=cs_s * c_in * self.kernel_size * self.kernel_size * fm_size * fm_size

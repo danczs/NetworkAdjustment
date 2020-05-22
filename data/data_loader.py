@@ -57,10 +57,10 @@ def _data_transforms_cifar100():
         transforms.ToTensor(),
         transforms.Normalize(CIFAR_MEAN, CIFAR_STD)
     ])
-    valid_transform = transforms.Compose({
+    valid_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(CIFAR_MEAN, CIFAR_STD)
-    })
+    ])
     return train_transform, valid_transform
 
 def create_imagenet_loader(dataset_dir, train_portion, batch_size, workers, distributed):

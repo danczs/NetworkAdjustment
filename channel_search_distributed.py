@@ -157,7 +157,7 @@ def train_new_model(model, train_queue, valid_queue, test_queue):
         drop_rates = [drop_rate] * drop_layers
         if args.layerd:
             for i in range(drop_layers):
-                drop_rate[i] = drop_rates[i] * (i + 1) / drop_layers
+                drop_rates[i] = drop_rates[i] * (i + 1) / drop_layers
         ori_model.set_drop_rates(drop_rates)
         logging.info(ori_model.drop_rates)
 

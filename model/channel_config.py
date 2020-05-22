@@ -27,7 +27,7 @@ class ChannelConfig(object):
         pass
 
     def get_flops_fn(self):
-        return self.flops_fn.subs(self.channel_numbers)
+        return self.flops_fn
 
     def get_flops(self):
         return self.flops_fn.subs(self.channel_numbers)
@@ -45,6 +45,18 @@ class ChannelConfig(object):
 
     def get_searched_layers(self):
         return self.searched_layers
+
+    def update_channel(self, top_index, bot_index, arch_learning_rate, arch_learning_rate_decay=0):
+        for i, ti in enumerate(top_index):
+            si = 'c' + str(ti)
+            a_lr = max(arch_learning_rate - arch_learning_rate_decay * i, 0)
+            self.channel_numbers[si] = round(self.channel_numbers[si] + a_lr * self.channel_numbers_init[si])
+        for i, bi in enumerate(bot_index):
+            si = 'c' + str(bi)
+            a_lr = max(arch_learning_rate - arch_learning_rate_decay * i, 0)
+            self.channel_numbers[si] = round(self.channel_numbers[si] - a_lr * self.channel_numbers_init[si])
+        self.update_flops_fn()
+
 
     def get_scale_flops(self, scale):
         tmp_channel_numbers = self.channel_numbers.copy()
@@ -80,7 +92,7 @@ class ChannelConfig(object):
             self.scale_channels(scale)
             self.update_flops_fn()
 
-    def scale_channel(self, scale):
+    def scale_channels(self, scale):
         for i in range(self.searched_layers):
             key = 'c' + str(i)
             self.channel_numbers[key] = round(self.channel_numbers[key] * scale)

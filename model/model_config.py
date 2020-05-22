@@ -60,7 +60,7 @@ class ModelConfig(object):
         bot_index = sort_index[:update_number]
         top_index = sort_index[-update_number:][::-1]
         logging.info([bot_index, top_index])
-        self.channel_config.upate_channel(top_index, bot_index, arch_learning_rate, arch_learning_rate_decay)
+        self.channel_config.update_channel(top_index, bot_index, arch_learning_rate, arch_learning_rate_decay)
 
     def scale_to_ori_flops(self):
         self.channel_config.scale_to_ori_flops()
