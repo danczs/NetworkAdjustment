@@ -18,9 +18,7 @@ Multi-GPU ( *e.g.* 8 GPU) on ImageNet:
 ```
 ## Results
 #### Results on CIFAR-100:
-![results on cifar-100](tables_and_imgs/table_cifar.png "cifar-100")
-
-<img src="tables_and_imgs/table_cifar.png" alt="results on cifar-100" width="50%">
+<img src="tables_and_imgs/table_cifar.png" alt="results on cifar-100" width="60%">
 
 #### Results on ImageNet:
 ![results on ImageNet](tables_and_imgs/table_imagenet.png "ImageNet")
