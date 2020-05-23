@@ -18,12 +18,12 @@ Multi-GPU ( *e.g.* 8 GPU) on ImageNet:
 ```
 ## Results
 #### Results on CIFAR-100:
-<img src="tables_and_imgs/table_cifar.png" alt="results on cifar-100" width="60%">
+![results on ImageNet](tables_and_imgs/table_cifar.png "ImageNet")
 
 #### Results on ImageNet:
 ![results on ImageNet](tables_and_imgs/table_imagenet.png "ImageNet")
 
-#### Search ResNet18 0.8x on ImageNet:
+#### Searched ResNet18 0.8x on ImageNet:
 ![Search ResNet18](tables_and_imgs/resnet18_searched.png "Search ResNet18")
 
 ## Citation
