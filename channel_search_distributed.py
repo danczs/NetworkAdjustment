@@ -45,8 +45,8 @@ parser.add_argument('--sched', default='cosine', type=str, help='scheduler')
 parser.add_argument('--drop_rate', type=float, default=0.)
 parser.add_argument('--label_smoothing', type=float, default=0.0, help='label smoothing')
 parser.add_argument('--report_freq',type=int, default=100)
-parser.add_argument('--epd', type=str2bool, default=False, help='decay drop rate with epochs')
-parser.add_argument('--layerd', type=str2bool, default=False, help='decay drop rate with layer index')
+parser.add_argument('--epd', type=str2bool, default=True, help='decay drop rate with epochs')
+parser.add_argument('--layerd', type=str2bool, default=True, help='decay drop rate with layer index')
 
 #dataet parameters
 parser.add_argument('--train_portion', type=float, default=0.9, help='portion of training data for evaluation')
