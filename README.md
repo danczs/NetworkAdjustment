@@ -4,7 +4,7 @@
 
 ## Introduction
 This repository contains a pytorch implementation for the NetworkAdjustment algorithm. NetworkAdjustmetn can 
-imporve the network performance by adjusting the channel numbers with introducing extra FLOPs.
+imporve the network performance by adjusting the channel numbers without introducing extra FLOPs.
 
 ## Usage
 ### channel search
