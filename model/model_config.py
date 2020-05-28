@@ -43,23 +43,29 @@ class ModelConfig(object):
             drop_rate = base_drop_rate * base_flops / (channel_numbers[d_index] * channel_diff[d_index])
             drop_rates = [0] * searched_layers
             drop_rates[i] = float(drop_rate)
-            logging.info(drop_rates)
+            if local_rank == 0:
+                logging.info('Drop rate in each layer:')
+                logging.info(drop_rates)
             self.model.set_drop_rates(drop_rates)
             for t in range(times):
                 acc, loss = infer(valid_loader, self.model, self.fur_criterion, report_freq=100,
                                   world_size=world_size, distributed=distributed)
                 fur[i] += (loss - base_loss) / times
         self.fur = fur
-        logging.info(fur)
+        if local_rank == 0:
+            logging.info('FUR in each layer:')
+            logging.info(fur)
         return fur
 
-    def update_chanel_with_fur(self, update_number, arch_learning_rate, arch_learning_rate_decay=0):
+    def update_chanel_with_fur(self, update_number, arch_learning_rate, arch_learning_rate_decay=0, local_rank=0):
         sort_index = np.argsort(self.fur, axis=-1)
         searched_layers = self.channel_config.get_searched_layers()
         assert update_number <= searched_layers
         bot_index = sort_index[:update_number]
         top_index = sort_index[-update_number:][::-1]
-        logging.info([bot_index, top_index])
+        if local_rank == 0:
+            logging.info('adjusted layers:')
+            logging.info([bot_index, top_index])
         self.channel_config.update_channel(top_index, bot_index, arch_learning_rate, arch_learning_rate_decay)
 
     def scale_to_ori_flops(self):
@@ -69,7 +75,8 @@ class ModelConfig(object):
         logging.info("*****channel config******")
         logging.info(self.channel_config.get_channel_numbers())
 
-    def logging_config(self):
-        list_channel_config()
-        logging.info("flops: %d" %(self.channel_config.get_flops()))
-        logging.info('parameter count: %d' % (sum([m.numel() for m in self.model.parameters()])))
+    def logging_config(self, local_rank):
+        if local_rank == 0:
+            list_channel_config()
+            logging.info("flops: %d" %(self.channel_config.get_flops()))
+            logging.info('parameter count: %d' % (sum([m.numel() for m in self.model.parameters()])))

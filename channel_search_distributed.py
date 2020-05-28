@@ -89,7 +89,7 @@ def main():
     torch.manual_seed(args.seed)
     cudnn.enabled = True
     torch.cuda.manual_seed(args.seed)
-    logging.info('args = %s', args)
+    cond_logging('args = %s', args)
 
     args.distributed = False
     if 'WORLD_SIZE' in os.environ:
@@ -108,7 +108,7 @@ def main():
         args.rank = torch.distributed.get_rank()
 
     assert args.rank >= 0
-    logging.info("new args = %s", args)
+    cond_logging("new args = %s", args)
     train_queue, valid_queue, test_queue = create_dataset_loader(args.dataset, args.dataset_dir, args.train_portion,
                                                                  args.batch_size, args.workers, args.distributed)
     model_config = ModelConfig(arch=args.arch,
@@ -121,19 +121,21 @@ def main():
     model_config.set_fur_criterion(get_criterion(args.classes, 0.))
 
     for i in range(args.iters):
-        logging.info('******* search iter:{} *********'.format(i))
+        cond_logging('******* search iter:{} *********'.format(i))
         model = model_config.build_model()
         if args.distributed:
             if args.distributed:
                 model = DDP(model, device_ids=[args.local_rank])
-        model_config.logging_config()
+        cond_logging("before adjustment:")
+        model_config.logging_config(args.local_rank)
         model = train_new_model(model, train_queue, valid_queue, test_queue)
         model_config.computing_fur(valid_queue, args.base_drop_rate, args.times, args.world_size, args.distributed,
                                    args.local_rank)
-        update_num = max( round(args.update_num - i * args.update_num_decay), 0)
-        model_config.update_chanel_with_fur(update_num, args.arch_learning_rate, args.arch_learning_rate_decay)
+        update_num = max(round(args.update_num - i * args.update_num_decay), 0)
+        model_config.update_chanel_with_fur(update_num, args.arch_learning_rate, args.arch_learning_rate_decay, args.local_rank)
         model_config.scale_to_ori_flops()
-        model_config.list_channel_config()
+        cond_logging("After adjustment:")
+        model_config.logging_config(args.local_rank)
         del model
         torch.cuda.synchronize()
 
@@ -147,7 +149,7 @@ def train_new_model(model, train_queue, valid_queue, test_queue):
     for epoch in range(args.epochs):
         scheduler.step()
         lr = scheduler.get_lr()[0]
-        logging.info('epoch %d lr %e', epoch, lr)
+        cond_logging('epoch %d lr %e', epoch, lr)
         if args.distributed:
             train_queue.sampler.set_epoch(epoch)
         if args.epd:
@@ -159,21 +161,31 @@ def train_new_model(model, train_queue, valid_queue, test_queue):
             for i in range(drop_layers):
                 drop_rates[i] = drop_rates[i] * (i + 1) / drop_layers
         ori_model.set_drop_rates(drop_rates)
-        logging.info(ori_model.drop_rates)
+        cond_logging('drop rates:')
+        cond_logging(ori_model.drop_rates)
 
         #training
-        train_acc, train_obj = train(train_queue, model, criterion, optimizer, lr, args.report_freq)
-        if args.local_rank == 0:
-            logging.info('train acc %f', train_acc)
+        train_acc, train_obj = train(train_queue, model, criterion, optimizer, lr, args.report_freq, args.world_size,
+                                     args.distributed, args.local_rank)
+
+        cond_logging('train acc %f', train_acc)
         #validation
         drop_rates = [0] * drop_layers
         ori_model.set_drop_rates(drop_rates)
         valid_acc, valid_obj = infer(valid_queue, model, criterion, args.report_freq, args.world_size,
                                      args.distributed, args.local_rank)
-        logging.info('valid acc %f', valid_acc)
+        cond_logging('valid acc %f', valid_acc)
         test_acc, test_obj = infer(test_queue, model, criterion, args.report_freq, args.world_size,
                                      args.distributed, args.local_rank)
-        logging.info('test acc %f', test_acc)
+        cond_logging('test acc %f', test_acc)
+    return model
+
+def cond_logging(*logging_args):
+    if args.local_rank == 0:
+        logging.info(*logging_args)
+
+
+
 
 if __name__ == '__main__':
     main()

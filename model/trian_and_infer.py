@@ -5,7 +5,7 @@ import torch.nn as nn
 import logging
 import torch
 
-def train(train_queue, model, criterion, optimizer, lr, report_freq=100):
+def train(train_queue, model, criterion, optimizer, lr, report_freq=100, world_size=0, distributed=False, local_rank=0):
     objs = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
@@ -27,7 +27,7 @@ def train(train_queue, model, criterion, optimizer, lr, report_freq=100):
         top1.update(prec1.item(), n)
         top5.update(prec5.item(), n)
 
-        if step % report_freq == 0:
+        if step % report_freq == 0 and local_rank==0:
             logging.info('train %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
     return top1.avg, top5.avg
 

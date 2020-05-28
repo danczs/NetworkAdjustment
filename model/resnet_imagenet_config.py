@@ -8,7 +8,7 @@ import logging
 
 @register_channel_config
 class ResNet_ImageNet_Config(ChannelConfig):
-    def __init__(self, depth, width_multiplier, init_channels=64,channel_padding='local', classes=1000, **kwargs):
+    def __init__(self, depth, width_multiplier, init_channels=64, channel_padding='local', classes=1000, **kwargs):
         super(ResNet_ImageNet_Config, self).__init__(depth, width_multiplier, init_channels, channel_padding, classes, **kwargs)
         assert depth in [18, 34]
         self.kernel_size = 3
