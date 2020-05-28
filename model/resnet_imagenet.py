@@ -6,7 +6,6 @@ from torch.nn.parameter import Parameter
 import torch.nn.init as init
 from .drop import DropChannel
 
-
 class Cell(nn.Module):
     def __init__(self, C_in, C_outs, reduction, drop_type='b', channel_padding='local'):
         super(Cell, self).__init__()
@@ -85,7 +84,7 @@ class ResNetImageNet(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         )
         self.cells = nn.ModuleList()
-        self.c_red = [4,8,12] if depth == 18 else [6, 14 ,26] #resnet-18 & 34
+        self.c_red = [4,8,12] if depth == 18 else [6, 14,26] #resnet-18 & 34
         self.drop_rates =[]
         for j in range(self.cell_num):
             if j*2 in self.c_red:

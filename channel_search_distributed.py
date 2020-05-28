@@ -10,7 +10,7 @@ import numpy as np
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 from torch.nn.parallel import DistributedDataParallel as DDP
-
+import init_channel_config
 from torch.autograd import Variable
 from data import create_dataset_loader
 from model import ModelConfig, train, infer
@@ -60,7 +60,9 @@ parser.add_argument('--arch', type=str, default='resnet_cifar', help='network ar
 parser.add_argument('--channel_padding', type=str, default='local', help='the channel padding type for channel mismatch')
 parser.add_argument('--depth', type=int, default=20, help='network depth for resnet')
 parser.add_argument('--classes', type=int, default=100, help='classes')
-parser.add_argument('--init_channels', type=int, default=16, help='the channels numbers in the first layer')
+parser.add_argument('--init_channels', type=int, default=16, help='the channels number in the first layer')
+parser.add_argument('--init_channel_config', type=str, default=None, help='the initial channel numbers')
+parser.add_argument('--eval', type=str2bool, default=False, help='evaluate the init channel numbers')
 parser.add_argument('--width_multiplier', type=float, default=1.0, help='network width multiplier')
 parser.add_argument('--save', type=str, default='./', help='dir for saving log')
 
@@ -119,6 +121,9 @@ def main():
                                classes=args.classes
                                )
     model_config.set_fur_criterion(get_criterion(args.classes, 0.))
+    if args.init_channel_config:
+        init_channel_numbers = eval('init_channel_config.%s' % args.init_channel_config)
+        model_config.set_channel_numbers(init_channel_numbers)
 
     for i in range(args.iters):
         cond_logging('******* search iter:{} *********'.format(i))
@@ -129,6 +134,8 @@ def main():
         cond_logging("before adjustment:")
         model_config.logging_config(args.local_rank)
         model = train_new_model(model, train_queue, valid_queue, test_queue)
+        if args.eval:
+            break
         model_config.computing_fur(valid_queue, args.base_drop_rate, args.times, args.world_size, args.distributed,
                                    args.local_rank)
         update_num = max(round(args.update_num - i * args.update_num_decay), 0)

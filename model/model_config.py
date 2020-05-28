@@ -80,3 +80,6 @@ class ModelConfig(object):
             list_channel_config()
             logging.info("flops: %d" %(self.channel_config.get_flops()))
             logging.info('parameter count: %d' % (sum([m.numel() for m in self.model.parameters()])))
+
+    def set_channel_numbers(self, channel_numbers):
+        self.channel_config.channel_numbers = channel_numbers
