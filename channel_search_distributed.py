@@ -76,7 +76,7 @@ parser.add_argument('--iters', type=int, default=10, help='the search iterations
 parser.add_argument('--times', type=int, default=5, help='times for evalutation to overcome the randomness of dropout')
 parser.add_argument('--base_drop_rate', type=float, default=0.1, help='the used drop rate for fur evaluation')
 parser.add_argument('--update_num', type=int, default=3, help='the number of adjusted layers during channel adjustment')
-parser.add_argument('--update_num_decay', type=int, default=0., help='update number decay during training')
+parser.add_argument('--update_num_decay', type=float, default=0., help='update number decay during training')
 
 args = parser.parse_args()
 
