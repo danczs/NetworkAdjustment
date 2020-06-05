@@ -57,7 +57,7 @@ parser.add_argument('--workers', type=int, default=8, help='workers for loading 
 
 #model parameters
 parser.add_argument('--arch', type=str, default='resnet_cifar', help='network architecture')
-parser.add_argument('--channel_padding', type=str, default='local', help='the channel padding type for channel mismatch')
+parser.add_argument('--channel_padding', type=str, default='local', help='the channel padding type for channel number mismatch')
 parser.add_argument('--depth', type=int, default=20, help='network depth for resnet')
 parser.add_argument('--classes', type=int, default=100, help='classes')
 parser.add_argument('--init_channels', type=int, default=16, help='the channels number in the first layer')
