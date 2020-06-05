@@ -77,7 +77,7 @@ class ModelConfig(object):
 
     def logging_config(self, local_rank):
         if local_rank == 0:
-            list_channel_config()
+            self.list_channel_config()
             logging.info("flops: %d" %(self.channel_config.get_flops()))
             logging.info('parameter count: %d' % (sum([m.numel() for m in self.model.parameters()])))
 
