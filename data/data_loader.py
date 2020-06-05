@@ -73,12 +73,6 @@ def create_imagenet_loader(dataset_dir, train_portion, batch_size, workers, dist
     train_data.transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(
-            brightness=0.4,
-            contrast=0.4,
-            saturation=0.4,
-            hue=0.2
-        ),
         transforms.ToTensor(),
         normalize
     ])

@@ -38,6 +38,8 @@ parser.add_argument('--learning_rate_min', type=float, default=1e-3, help='min l
 parser.add_argument('--momentum', type=float, default=0.9, help='the momentum for optimizer')
 parser.add_argument('--weight_decay', type=float, default=3e-4)
 parser.add_argument('--epochs', type=int,default=20)
+
+parser.add_argument('--warmup', type=str2bool, default=False, help='if using warmup during training')
 parser.add_argument('--warmup_lr', type=float, default=1e-3)
 parser.add_argument('--warmup_epochs', type=int, default=3)
 parser.add_argument('--opt', default='sgd',type=str,help='optimizer')
@@ -49,7 +51,7 @@ parser.add_argument('--epd', type=str2bool, default=True, help='decay drop rate 
 parser.add_argument('--layerd', type=str2bool, default=True, help='decay drop rate with layer index')
 
 #dataet parameters
-parser.add_argument('--train_portion', type=float, default=0.9, help='portion of training data for evaluation')
+parser.add_argument('--train_portion', type=float, default=0.9, help='portion of training data for evaluation, only works for CIFAR-100')
 parser.add_argument('--dataset', type=str, default='cifar100')
 parser.add_argument('--dataset_dir', type=str, default='../data')
 parser.add_argument('--con_type', type=str, default='flops')#will support other constraint in the future
@@ -57,7 +59,7 @@ parser.add_argument('--workers', type=int, default=8, help='workers for loading 
 
 #model parameters
 parser.add_argument('--arch', type=str, default='resnet_cifar', help='network architecture')
-parser.add_argument('--channel_padding', type=str, default='local', help='the channel padding type for channel number mismatch')
+parser.add_argument('--channel_padding', type=str, default='max', help='the channel padding type for channel number mismatch')
 parser.add_argument('--depth', type=int, default=20, help='network depth for resnet')
 parser.add_argument('--classes', type=int, default=100, help='classes')
 parser.add_argument('--init_channels', type=int, default=16, help='the channels number in the first layer')
@@ -155,8 +157,15 @@ def train_new_model(model, train_queue, valid_queue, test_queue):
 
     for epoch in range(args.epochs):
         scheduler.step()
-        lr = scheduler.get_lr()[0]
-        cond_logging('epoch %d lr %e', epoch, lr)
+        if args.warmup and epoch < args.warmup_epochs:
+            lr = args.learning_rate * epoch / args.warmup_epochs + args.warmup_lr
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = lr
+            cond_logging('epoch %d lr %e', epoch, lr)
+        else:
+            lr = scheduler.get_lr()[0]
+            cond_logging('epoch %d lr %e', epoch, lr)
+
         if args.distributed:
             train_queue.sampler.set_epoch(epoch)
         if args.epd:
