@@ -74,7 +74,7 @@ class ResNetImageNet(nn.Module):
         self.channel_padding = channel_padding
         self.depth = depth
         self.cell_num = (depth - 2) // 2
-
+        self.c_red = [4, 8, 12] if depth == 18 else [6, 14, 26]  # resnet-18 & 34
         c_in, c_outm, c_out, c_final = self.parse_channel_config(self.init_channels, channel_numbers,
                                                                  self.channel_padding)
         self.stem = nn.Sequential(
@@ -84,7 +84,7 @@ class ResNetImageNet(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         )
         self.cells = nn.ModuleList()
-        self.c_red = [4,8,12] if depth == 18 else [6, 14,26] #resnet-18 & 34
+
         self.drop_rates =[]
         for j in range(self.cell_num):
             if j*2 in self.c_red:
@@ -122,7 +122,7 @@ class ResNetImageNet(nn.Module):
             if channel_padding == 'local':
                 in_channel = c_out[-1]
             elif channel_padding == 'max':
-                in_channel = max(c_out[-1], in_channel)
+                in_channel = c_out[-1] if i*2 in self.c_red else max(c_out[-1], in_channel)
         return c_in, c_outm, c_out, in_channel
 
     def forward(self, input):
