@@ -144,7 +144,7 @@ def main():
         model_config.update_chanel_with_fur(update_num, args.arch_learning_rate, args.arch_learning_rate_decay, args.local_rank)
         model_config.scale_to_ori_flops()
         cond_logging("After adjustment:")
-        model_config.logging_config(args.local_rank)
+        model_config.list_channel_config(args.local_rank)
         del model
         torch.cuda.synchronize()
 

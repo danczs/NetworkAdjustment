@@ -71,15 +71,17 @@ class ModelConfig(object):
     def scale_to_ori_flops(self):
         self.channel_config.scale_to_ori_flops()
 
-    def list_channel_config(self):
-        logging.info("*****channel config******")
-        logging.info(self.channel_config.get_channel_numbers())
+    def list_channel_config(self, local_rank=0):
+        if local_rank == 0:
+            logging.info("*****channel config******")
+            logging.info(self.channel_config.get_channel_numbers())
+            logging.info("flops: %d" % (self.channel_config.get_flops()))
 
     def logging_config(self, local_rank):
         if local_rank == 0:
             self.list_channel_config()
-            logging.info("flops: %d" %(self.channel_config.get_flops()))
             logging.info('parameter count: %d' % (sum([m.numel() for m in self.model.parameters()])))
 
     def set_channel_numbers(self, channel_numbers):
         self.channel_config.channel_numbers = channel_numbers
+        self.channel_config.update_flops_fn()
