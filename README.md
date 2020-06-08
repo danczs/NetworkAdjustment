@@ -14,7 +14,7 @@ channel_search_distributed.py --dataset=cifar100 --dataset_dir=$DATA_DIR$ --gpu=
 ```
 Multi-GPU ( *e.g.* 8 GPU) on ImageNet:
 ```bash
-./distributed_search.sh 8 --dataset=ImageNet --dataset_dir=$DATA_DIR$ --batch_size=64 --learning_rate=0.2 --epochs=10 --arch=resnet_imagenet --init_channels=64 --classes=1000 --drop_rate=0.05 --base_drop_rate=0.1 --depth=18 --weight_decay=4e-5 --update_num=6
+./distributed_search.sh 8 --dataset=ImageNet --dataset_dir=$DATA_DIR$ --batch_size=64 --learning_rate=0.2 --epochs=10 --arch=resnet_imagenet --init_channels=64 --classes=1000 --drop_rate=0.05 --base_drop_rate=0.2 --layerd=F --depth=18 --weight_decay=4e-5 --update_num=6
 ```
 Network evaluation on CIFAR-100:
 ```bash
