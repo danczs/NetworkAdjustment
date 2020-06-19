@@ -38,10 +38,11 @@ The evalutated channel configs are saved in *init_channel_config.py*
 ## Citation
 If you use NetworkAdjustment in your research, please cite the paper:
 ```
-@article{Chen2020NetworkAdjustment,
+@inproceedings{chen2020network,
   title={Network Adjustment: Channel Search Guided by FLOPs Utilization Ratio},
   author={Chen, Zhengsu and Niu, Jianwei and Xie, Lingxi and Liu, Xuefeng and Wei, Longhui and Tian, Qi},
-  journal={arXiv preprint arXiv:2004.02767},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={10658--10667},
   year={2020}
 }
 ```
