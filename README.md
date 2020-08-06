@@ -10,7 +10,7 @@ imporve the network performance by adjusting the channel numbers without introdu
 ### channel search
 Single GPU on CIFAR-100:
 ```bash
-channel_search_distributed.py --dataset=cifar100 --dataset_dir=$DATA_DIR$ --gpu=0 --batch_size=128 --learning_rate=0.15 --epochs=200 --arch=resnet_cifar --depth=20 --drop_rate=0.05 --base_drop_rate=0.05 --update_num=6 --update_num_decay=0.5 --arch_learning_rate=0.15 --arch_learning_rate_decay=0.01
+python channel_search_distributed.py --dataset=cifar100 --dataset_dir=$DATA_DIR$ --gpu=0 --batch_size=128 --learning_rate=0.15 --epochs=200 --arch=resnet_cifar --depth=20 --drop_rate=0.05 --base_drop_rate=0.05 --update_num=6 --update_num_decay=0.5 --arch_learning_rate=0.15 --arch_learning_rate_decay=0.01
 ```
 Multi-GPU ( *e.g.* 8 GPU) on ImageNet:
 ```bash
@@ -18,7 +18,7 @@ Multi-GPU ( *e.g.* 8 GPU) on ImageNet:
 ```
 Network evaluation on CIFAR-100:
 ```bash
-channel_search_distributed.py --dataset=cifar100 --dataset_dir=$DATA_DIR$ --gpu=0 --batch_size=128 --learning_rate=0.15 --epochs=200 --arch=resnet_cifar --depth=20 --drop_rate=0.05 --eval=T --init_channel_config=resnet20_cifar_searched --train_portion=1.0 
+python channel_search_distributed.py --dataset=cifar100 --dataset_dir=$DATA_DIR$ --gpu=0 --batch_size=128 --learning_rate=0.15 --epochs=200 --arch=resnet_cifar --depth=20 --drop_rate=0.05 --eval=T --init_channel_config=resnet20_cifar_searched --train_portion=1.0 
 ```
 Network evaluation on ImageNet(8 GPU):
 ```bash
