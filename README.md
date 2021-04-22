@@ -3,7 +3,7 @@
 ![pytorch](https://img.shields.io/badge/pytorch-v1.0.0-green.svg?style=plastic)
 
 ## Introduction
-This repository contains a pytorch implementation for the NetworkAdjustment algorithm. NetworkAdjustmetn can 
+This repository contains a pytorch implementation for the NetworkAdjustment algorithm. NetworkAdjustment can 
 imporve the network performance by adjusting the channel numbers without introducing extra FLOPs.
 
 ## Usage
