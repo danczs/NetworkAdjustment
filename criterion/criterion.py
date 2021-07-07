@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 def get_criterion(classes, label_smoothing):
-    if label_smoothing > 0.:
+    if label_smoothing <= 0.:
         criterion = nn.CrossEntropyLoss()
         criterion = criterion.cuda()
     else:
